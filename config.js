@@ -40,12 +40,12 @@ var config = {
   blockchainExplorerOpts: {
     livenet: {
       provider: 'insight',
-      url: 'explorer.mainnet.particl.io/insight',
+      url: 'http://explorer.mainnet.particl.io/insight',
       apiPrefix: '/particl-insight-api'
     },
     testnet: {
       provider: 'insight',
-      url: 'explorer.testnet.particl.io/insight',
+      url: 'http://explorer.testnet.particl.io/insight',
       apiPrefix: '/particl-insight-api'
       // url: 'http://localhost:3001',
       // Multiple servers (in priority order)
