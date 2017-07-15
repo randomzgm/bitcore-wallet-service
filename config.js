@@ -40,11 +40,13 @@ var config = {
   blockchainExplorerOpts: {
     livenet: {
       provider: 'insight',
-      url: 'https://insight.bitpay.com:443',
+      url: 'explorer.mainnet.particl.io/insight',
+      apiPrefix: '/particl-insight-api'
     },
     testnet: {
       provider: 'insight',
-      url: 'https://test-insight.bitpay.com:443',
+      url: 'explorer.testnet.particl.io/insight',
+      apiPrefix: '/particl-insight-api'
       // url: 'http://localhost:3001',
       // Multiple servers (in priority order)
       // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
@@ -53,7 +55,7 @@ var config = {
   pushNotificationsOpts: {
     templatePath: './lib/templates',
     defaultLanguage: 'en',
-    defaultUnit: 'btc',
+    defaultUnit: 'part',
     subjectPrefix: '',
     pushServerUrl: 'https://fcm.googleapis.com/fcm',
     authorizationKey: '',
