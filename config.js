@@ -41,12 +41,12 @@ var config = {
     livenet: {
       provider: 'insight',
       url: 'http://explorer.mainnet.particl.io',
-      apiPrefix: '/particl-insight-api'
+      apiPrefix: '/api'
     },
     testnet: {
       provider: 'insight',
       url: 'http://explorer.testnet.particl.io',
-      apiPrefix: '/particl-insight-api'
+      apiPrefix: '/api'
       // url: 'http://localhost:3001',
       // Multiple servers (in priority order)
       // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
