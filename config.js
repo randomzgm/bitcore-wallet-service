@@ -45,9 +45,9 @@ var config = {
     },
     testnet: {
       provider: 'insight',
-      url: 'http://explorer.testnet.particl.io',
-      apiPrefix: '/api'
-      // url: 'http://localhost:3001',
+      //url: 'http://explorer.testnet.particl.io',
+      url: 'http://localhost:3001',
+      apiPrefix: '/particl-insight-api'
       // Multiple servers (in priority order)
       // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
     },
