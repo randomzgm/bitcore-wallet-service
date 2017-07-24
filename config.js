@@ -40,13 +40,13 @@ var config = {
   blockchainExplorerOpts: {
     livenet: {
       provider: 'insight',
-      url: 'http://explorer.mainnet.particl.io',
-      apiPrefix: '/api'
+      url: 'https://explorer.particl.io',
+      apiPrefix: '/particl-insight-api'
     },
     testnet: {
       provider: 'insight',
-      //url: 'http://explorer.testnet.particl.io',
-      url: 'http://localhost:3001',
+      url: 'https://explorer-testnet.particl.io',
+      //url: 'http://localhost:3001',
       apiPrefix: '/particl-insight-api'
       // Multiple servers (in priority order)
       // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
