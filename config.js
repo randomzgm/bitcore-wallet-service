@@ -64,6 +64,16 @@ var config = {
       },
 
     },
+    part: {
+      livenet: {
+        provider: 'insight',
+        url: 'https://explorer.particl.io:443',
+      },
+      testnet: {
+        provider: 'insight',
+        url: 'https://explorer-testnet.particl.io:443',
+      },
+    },
   },
   pushNotificationsOpts: {
     templatePath: './lib/templates',
