@@ -38,18 +38,43 @@ var config = {
     },
   },
   blockchainExplorerOpts: {
-    livenet: {
-      provider: 'insight',
-      url: 'https://explorer.particl.io',
-      apiPrefix: '/particl-insight-api'
+    btc: {
+      livenet: {
+        provider: 'insight',
+        url: 'https://insight.bitpay.com:443',
+      },
+      testnet: {
+        provider: 'insight',
+        url: 'https://test-insight.bitpay.com:443',
+        // Multiple servers (in priority order)
+        // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
+      },
     },
-    testnet: {
-      provider: 'insight',
-      url: 'https://explorer-testnet.particl.io',
-      //url: 'http://localhost:3001',
-      apiPrefix: '/particl-insight-api'
-      // Multiple servers (in priority order)
-      // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
+    bch: {
+      livenet: {
+        provider: 'insight',
+        //url: 'https://cashexplorer.bitcoin.com',
+        url: 'https://bch-insight.bitpay.com:443',
+        addressFormat: 'cashaddr',  // copay, cashaddr, or legacy
+      },
+      testnet: {
+        provider: 'insight',
+        url: 'https://test-bch-insight.bitpay.com:443',
+        addressFormat: 'cashaddr',  // copay, cashaddr, or legacy
+      },
+
+    },
+    part: {
+      livenet: {
+        provider: 'insight',
+        url: 'https://explorer.particl.io:443',
+        apiPrefix: '/particl-insight-api'
+      },
+      testnet: {
+        provider: 'insight',
+        url: 'https://explorer-testnet.particl.io:443',
+        apiPrefix: '/particl-insight-api'
+      },
     },
   },
   pushNotificationsOpts: {
@@ -58,7 +83,7 @@ var config = {
     defaultUnit: 'part',
     subjectPrefix: '',
     pushServerUrl: 'https://fcm.googleapis.com/fcm',
-    authorizationKey: '',
+    authorizationKey: 'You_have_to_put_something_here',
   },
   fiatRateServiceOpts: {
     defaultProvider: 'BitPay',
@@ -75,16 +100,22 @@ var config = {
   //  defaultLanguage: 'en',
   //  defaultUnit: 'btc',
   //  publicTxUrlTemplate: {
-  //    livenet: 'https://insight.bitpay.com/tx/{{txid}}',
-  //    testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+  //    btc: {
+  //      livenet: 'https://insight.bitpay.com/tx/{{txid}}',
+  //      testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+  //    },
+  //    bch: {
+  //      livenet: 'https://bch-insight.bitpay.com/#/tx/{{txid}}',
+  //      testnet: 'https://test-bch-insight.bitpay.com/#/tx/{{txid}}',
+  //    }
   //  },
-  //},
-  //
+  // },
   // To use sendgrid:
-  // var sgTransport = require('nodemail-sendgrid-transport');
-  // mailer:sgTransport({
-  //  api_user: xxx,
-  //  api_key: xxx,
-  // });
+  // const sgMail = require('@sendgrid/mail');
+  // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  //
+  //
+  // //then add:
+  // mailer: sgMail,
 };
 module.exports = config;

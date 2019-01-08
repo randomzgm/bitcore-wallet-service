@@ -13,7 +13,7 @@ Bitcore Wallet Service facilitates multisig HD wallets creation and operation th
 
 BWS can usually be installed within minutes and accommodates all the needed infrastructure for peers in a multisig wallet to communicate and operate – with minimum server trust.
   
-See [Bitcore-wallet-client](https://github.com/bitpay/bitcore-wallet-client) for the *official* client library that communicates to BWS and verifies its response. Also check [Bitcore-wallet](https://github.com/bitpay/bitcore-wallet) for a simple CLI wallet implementation that relays on BWS.
+See [Bitcore-wallet-client](https://github.com/bitpay/bitcore-wallet-client) for the *official* client library that communicates to BWS and verifies its response. Also check [Bitcore-wallet](https://github.com/bitpay/bitcore-wallet) for a simple CLI wallet implementation that relies on BWS.
 
 BWS is been used in production enviroments for [Copay Wallet](https://copay.io), [Bitpay App wallet](https://bitpay.com/wallet) and others.  
 
@@ -22,8 +22,11 @@ More about BWS at https://blog.bitpay.com/announcing-the-bitcore-wallet-suite/
 # Getting Started
 ```
  git clone https://github.com/bitpay/bitcore-wallet-service.git
- cd bitcore-wallet-service && npm start
+ cd bitcore-wallet-service
+ npm install
+ npm start
 ```
+
 
 This will launch the BWS service (with default settings) at `http://localhost:3232/bws/api`.
 
@@ -32,6 +35,14 @@ BWS needs mongoDB. You can configure the connection at `config.js`
 BWS supports SSL and Clustering. For a detailed guide on installing BWS with extra features see [Installing BWS](https://github.com/bitpay/bitcore-wallet-service/blob/master/installation.md). 
 
 BWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you need to modify it, check defaults.js' `Defaults.RateLimit`
+
+# Using BWS with PM2
+
+BWS can be used with PM2 with the provided `app.js` script: 
+ 
+```
+  pm2 start app.js --name "bitcoin-wallet-service"
+```
 
 # Security Considerations
  * Private keys are never sent to BWS. Copayers store them locally.
@@ -42,7 +53,29 @@ BWS uses by default a Request Rate Limitation to CreateWallet endpoint. If you n
   * Addresses and change addresses are derived independently and locally by the copayers from their local data.
   * TX Proposals templates are signed by copayers and verified by others, so the BWS cannot create or tamper with them.
 
+# Using SSL
+
+  You can add your certificates at the config.js using:
+
+``` json
+   https: true,
+   privateKeyFile: 'private.pem',
+   certificateFile: 'cert.pem',
+  ////// The following is only for certs which are not
+  ////// trusted by nodejs 'https' by default
+  ////// CAs like Verisign do not require this
+  // CAinter1: '', // ex. 'COMODORSADomainValidationSecureServerCA.crt'
+  // CAinter2: '', // ex. 'COMODORSAAddTrustCA.crt'
+  // CAroot: '', // ex. 'AddTrustExternalCARoot.crt'
+```
+
+@dabura667 made a report about how to use letsencrypt with BWS: https://github.com/bitpay/bitcore-wallet-service/issues/423
+  
+
 # REST API
+
+Note: all currency amounts are in units of satoshis (1/100,000,000 of a bitcoin).
+
 ## Authentication
 
   In order to access a wallet, clients are required to send the headers:
@@ -146,7 +179,7 @@ Returns:
 Required Arguments:
  * toAddress: RCPT Bitcoin address.
  * amount: amount (in satoshis) of the mount proposed to be transfered
- * proposalsSignature: Signature of the proposal by the creator peer, using prososalSigningKey.
+ * proposalsSignature: Signature of the proposal by the creator peer, using proposalSigningKey.
  * (opt) message: Encrypted private message to peers.
  * (opt) payProUrl: Paypro URL for peers to verify TX
  * (opt) feePerKb: Use an alternative fee per KB for this TX.
@@ -156,7 +189,7 @@ Returns:
  * TX Proposal object. (see [fields on the source code](https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/txproposal.js)). `.id` is probably needed in this case.
 
 
-`/v1/addresses/`: Request a new main address from wallet
+`/v3/addresses/`: Request a new main address from wallet . (creates an address on normal conditions)
 
 Returns:
  * Address object: (https://github.com/bitpay/bitcore-wallet-service/blob/master/lib/model/address.js)). Note that `path` is returned so client can derive the address independently and check server's response.
@@ -212,7 +245,7 @@ Required Arguments:
 `/v1/pushnotifications/subscriptions/`: Adds subscriptions for push notifications service at database.
 
 
-## DELETE Endopints
+## DELETE Endpoints
 `/v2/pushnotifications/subscriptions/`: Remove subscriptions for push notifications service from database.
 
  

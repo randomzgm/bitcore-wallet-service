@@ -131,4 +131,101 @@ describe('Utils', function() {
       });
     });
   });
+
+  describe('#getAddressCoin', function() {
+    it('should identify btc as coin for 1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA', function() {
+      Utils.getAddressCoin('1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA').should.equal('btc');
+    });
+    it('should identify bch as coin for CcJ4qUfyQ8x5NwhAeCQkrBSWVeXxXghcNz', function() {
+      Utils.getAddressCoin('CcJ4qUfyQ8x5NwhAeCQkrBSWVeXxXghcNz').should.equal('bch');
+    });
+    it('should return null for 1L', function() {
+      should.not.exist(Utils.getAddressCoin('1L'));
+    });
+  });
+ 
+  describe('#parseVersion', function() {
+    it('should parse version', function() {
+      Utils.parseVersion('bwc-2.3.1').should.deep.equal({
+        agent:'bwc',
+        major:2,
+        minor:3,
+        patch:1,
+      });
+    });
+    it('should parse version case 2', function() {
+      Utils.parseVersion('xxss').should.deep.equal({
+        agent:'xxss',
+      });
+    });
+    it('should parse version case 3', function() {
+      Utils.parseVersion('xxss-32').should.deep.equal({
+        agent:'xxss',
+        major:32,
+        minor:null,
+        patch:null,
+      });
+    });
+
+
+  });
+ 
+  describe('#parseAppVersion', function() {
+    it('should parse user version', function() {
+      Utils.parseAppVersion('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Copay/5.2.2 Chrome/66.0.3359.181 Electron/3.0.8 Safari/537.36').should.deep.equal({
+        app:'copay',
+        major:5,
+        minor:2,
+        patch:2,
+      });
+    });
+    it('should parse version case 2', function() {
+      Utils.parseAppVersion('bitpay 5.2.2 (Android 8.0.0 - SM-N950U)').should.deep.equal({
+        app:'bitpay',
+        major:5,
+        minor:2,
+        patch:2,
+      });
+    });
+    it('should parse version case 3', function() {
+      Utils.parseAppVersion('bitpay 5.2.2 (iOS 12.0 - iPhone9,2)').should.deep.equal({
+        app:'bitpay',
+        major:5,
+        minor:2,
+        patch:2,
+      });
+    });
+    it('should parse version case 4', function() {
+      Utils.parseAppVersion('node-superagent/3.8.3').should.deep.equal({
+        app:'other',
+      });
+    });
+
+  });
+
+
+  describe('#translateAddress', function() {
+    it('should translate address from btc to bch', function() {
+      var res = Utils.translateAddress('1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA', 'bch');
+      res.should.equal('CcJ4qUfyQ8x5NwhAeCQkrBSWVeXxXghcNz');
+    });
+    it('should translate address from bch to btc', function() {
+      var res = Utils.translateAddress('HBf8isgS8EXG1r3X6GP89FmooUmiJ42wHS', 'btc');
+      res.should.equal('36q2G5FMGvJbPgAVEaiyAsFGmpkhPKwk2r');
+    });
+ 
+    it('should keep the address if there is nothing to do (bch)', function() {
+      var res = Utils.translateAddress('CcJ4qUfyQ8x5NwhAeCQkrBSWVeXxXghcNz', 'bch');
+      res.should.equal('CcJ4qUfyQ8x5NwhAeCQkrBSWVeXxXghcNz');
+    });
+    it('should keep the address if there is nothing to do (btc)', function() {
+      var res = Utils.translateAddress('1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA', 'btc');
+      should.exist(res);
+      res.should.equal('1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA');
+    });
+
+
+
+  });
+  
 });

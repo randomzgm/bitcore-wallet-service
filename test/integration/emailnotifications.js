@@ -44,8 +44,9 @@ describe('Email notifications', function() {
             should.not.exist(err);
 
             mailerStub = sinon.stub();
-            mailerStub.sendMail = sinon.stub();
-            mailerStub.sendMail.yields();
+            mailerStub.send = sinon.stub();
+            mailerStub.send.returns(Promise.resolve('ok'));
+            //mailerStub.returns(Promise.reject('err'));
 
             emailService = new EmailService();
             emailService.start({
@@ -57,8 +58,14 @@ describe('Email notifications', function() {
                 from: 'bws@dummy.net',
                 subjectPrefix: '[test wallet]',
                 publicTxUrlTemplate: {
-                  livenet: 'https://insight.bitpay.com/tx/{{txid}}',
-                  testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+                  btc: {
+                    livenet: 'https://insight.bitpay.com/tx/{{txid}}',
+                    testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+                  },
+                  bch: {
+                    livenet: 'https://bch-insight.bitpay.com/#/tx/{{txid}}',
+                    testnet: 'https://test-bch-insight.bitpay.com/#/tx/{{txid}}',
+                  }
                 },
               },
             }, function(err) {
@@ -89,12 +96,12 @@ describe('Email notifications', function() {
         };
         helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
           setTimeout(function() {
-            var calls = mailerStub.sendMail.getCalls();
+            var calls = mailerStub.send.getCalls();
             calls.length.should.equal(2);
             var emails = _.map(calls, function(c) {
               return c.args[0];
             });
-            _.difference(['copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['copayer2@domain.com', 'copayer3@domain.com'], _.map(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('bws@dummy.net');
             one.subject.should.contain('New payment proposal');
@@ -126,7 +133,7 @@ describe('Email notifications', function() {
         };
         helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
           setTimeout(function() {
-            var calls = mailerStub.sendMail.getCalls();
+            var calls = mailerStub.send.getCalls();
             calls.length.should.equal(0);
             server.storage.fetchUnsentEmails(function(err, unsent) {
               should.not.exist(err);
@@ -169,7 +176,7 @@ describe('Email notifications', function() {
             txp = t;
             async.eachSeries(_.range(2), function(i, next) {
               var copayer = TestData.copayers[i];
-              helpers.getAuthServer(copayer.id44, function(server) {
+              helpers.getAuthServer(copayer.id44btc, function(server) {
                 var signatures = helpers.clientSign(txp, copayer.xPrivKey_44H_0H_0H);
                 server.signTx({
                   txProposalId: txp.id,
@@ -191,11 +198,11 @@ describe('Email notifications', function() {
           should.not.exist(err);
 
           setTimeout(function() {
-            var calls = mailerStub.sendMail.getCalls();
+            var calls = mailerStub.send.getCalls();
             var emails = _.map(_.takeRight(calls, 3), function(c) {
               return c.args[0];
             });
-            _.difference(['copayer1@domain.com', 'copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['copayer1@domain.com', 'copayer2@domain.com', 'copayer3@domain.com'], _.map(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('bws@dummy.net');
             one.subject.should.contain('Payment sent');
@@ -235,7 +242,7 @@ describe('Email notifications', function() {
             txpId = txp.id;
             async.eachSeries(_.range(1, 3), function(i, next) {
               var copayer = TestData.copayers[i];
-              helpers.getAuthServer(copayer.id44, function(server) {
+              helpers.getAuthServer(copayer.id44btc, function(server) {
                 server.rejectTx({
                   txProposalId: txp.id,
                 }, next);
@@ -246,11 +253,11 @@ describe('Email notifications', function() {
           should.not.exist(err);
 
           setTimeout(function() {
-            var calls = mailerStub.sendMail.getCalls();
+            var calls = mailerStub.send.getCalls();
             var emails = _.map(_.takeRight(calls, 2), function(c) {
               return c.args[0];
             });
-            _.difference(['copayer1@domain.com', 'copayer2@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['copayer1@domain.com', 'copayer2@domain.com'], _.map(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('bws@dummy.net');
             one.subject.should.contain('Payment proposal rejected');
@@ -275,12 +282,12 @@ describe('Email notifications', function() {
           amount: 12300000,
         }, function(err) {
           setTimeout(function() {
-            var calls = mailerStub.sendMail.getCalls();
+            var calls = mailerStub.send.getCalls();
             calls.length.should.equal(3);
             var emails = _.map(calls, function(c) {
               return c.args[0];
             });
-            _.difference(['copayer1@domain.com', 'copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+            _.difference(['copayer1@domain.com', 'copayer2@domain.com', 'copayer3@domain.com'], _.map(emails, 'to')).should.be.empty;
             var one = emails[0];
             one.from.should.equal('bws@dummy.net');
             one.subject.should.contain('New payment received');
@@ -309,7 +316,7 @@ describe('Email notifications', function() {
             txid: '123',
           }, function(err) {
             setTimeout(function() {
-              var calls = mailerStub.sendMail.getCalls();
+              var calls = mailerStub.send.getCalls();
               calls.length.should.equal(1);
               var email = calls[0].args[0];
               email.to.should.equal('copayer1@domain.com');
@@ -342,12 +349,12 @@ describe('Email notifications', function() {
             amount: 12300000,
           }, function(err) {
             setTimeout(function() {
-              var calls = mailerStub.sendMail.getCalls();
+              var calls = mailerStub.send.getCalls();
               calls.length.should.equal(2);
               var emails = _.map(calls, function(c) {
                 return c.args[0];
               });
-              _.difference(['copayer2@domain.com', 'copayer3@domain.com'], _.pluck(emails, 'to')).should.be.empty;
+              _.difference(['copayer2@domain.com', 'copayer3@domain.com'], _.map(emails, 'to')).should.be.empty;
               var one = emails[0];
               one.from.should.equal('bws@dummy.net');
               one.subject.should.contain('New payment received');
@@ -380,7 +387,7 @@ describe('Email notifications', function() {
             amount: 12300000,
           }, function(err) {
             setTimeout(function() {
-              var calls = mailerStub.sendMail.getCalls();
+              var calls = mailerStub.send.getCalls();
               calls.length.should.equal(3);
               var emails = _.map(calls, function(c) {
                 return c.args[0];
@@ -426,7 +433,7 @@ describe('Email notifications', function() {
           };
           helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
             setTimeout(function() {
-              var calls = mailerStub.sendMail.getCalls();
+              var calls = mailerStub.send.getCalls();
               calls.length.should.equal(2);
               server.storage.fetchUnsentEmails(function(err, unsent) {
                 should.not.exist(err);
@@ -438,6 +445,44 @@ describe('Email notifications', function() {
         });
       });
     });
+
+    it('should handler mailer errors ', function(done) {
+      mailerStub.send.rejects('err');
+      server.createAddress({}, function(err, address) {
+        should.not.exist(err);
+
+        // Simulate incoming tx notification
+        server._notify('NewIncomingTx', {
+          txid: '999',
+          address: address,
+          amount: 12300000,
+        }, function(err) {
+          setTimeout(function() {
+            var calls = mailerStub.send.getCalls();
+            calls.length.should.equal(3);
+            var emails = _.map(calls, function(c) {
+              return c.args[0];
+            });
+            _.difference(['copayer1@domain.com', 'copayer2@domain.com', 'copayer3@domain.com'], _.map(emails, 'to')).should.be.empty;
+            var one = emails[0];
+            one.from.should.equal('bws@dummy.net');
+            one.subject.should.contain('New payment received');
+            one.text.should.contain('123,000');
+            server.storage.fetchUnsentEmails(function(err, unsent) {
+              should.not.exist(err);
+              unsent.length.should.equal(3);
+              unsent[0].from.should.equal('bws@dummy.net');
+              unsent[1].from.should.equal('bws@dummy.net');
+              unsent[2].from.should.equal('bws@dummy.net');
+              done();
+            });
+          }, 100);
+        });
+      });
+    });
+
+
+
   });
 
   describe('1-of-N wallet', function() {
@@ -459,8 +504,8 @@ describe('Email notifications', function() {
             should.not.exist(err);
 
             mailerStub = sinon.stub();
-            mailerStub.sendMail = sinon.stub();
-            mailerStub.sendMail.yields();
+            mailerStub.send = sinon.stub();
+            mailerStub.send.resolves('ok');
 
             emailService = new EmailService();
             emailService.start({
@@ -472,8 +517,14 @@ describe('Email notifications', function() {
                 from: 'bws@dummy.net',
                 subjectPrefix: '[test wallet]',
                 publicTxUrlTemplate: {
-                  livenet: 'https://insight.bitpay.com/tx/{{txid}}',
-                  testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+                  btc: {
+                    livenet: 'https://insight.bitpay.com/tx/{{txid}}',
+                    testnet: 'https://test-insight.bitpay.com/tx/{{txid}}',
+                  },
+                  bch: {
+                    livenet: 'https://bch-insight.bitpay.com/#/tx/{{txid}}',
+                    testnet: 'https://test-bch-insight.bitpay.com/#/tx/{{txid}}',
+                  }
                 },
               },
             }, function(err) {
@@ -495,7 +546,7 @@ describe('Email notifications', function() {
           };
           helpers.createAndPublishTx(server, txOpts, TestData.copayers[0].privKey_1H_0, function(tx) {
             setTimeout(function() {
-              var calls = mailerStub.sendMail.getCalls();
+              var calls = mailerStub.send.getCalls();
               calls.length.should.equal(0);
               done();
             }, 100);
