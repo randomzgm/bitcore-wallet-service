@@ -4,27 +4,13 @@ var _ = require('lodash');
 var async = require('async');
 var chai = require('chai');
 var sinon = require('sinon');
+var mongodb = require('mongodb');
 var should = chai.should();
-var tingodb = require('tingodb')({
-  memStore: true
-});
-
 var Storage = require('../lib/storage');
 var Model = require('../lib/model');
+var config = require('./test-config');
 
 var db, storage;
-
-function openDb(cb) {
-  db = new tingodb.Db('./db/test', {});
-  // HACK: There appears to be a bug in TingoDB's close function where the callback is not being executed
-  db.__close = db.close;
-  db.close = function(force, cb) {
-    this.__close(force, cb);
-    return cb();
-  };
-  return cb();
-};
-
 
 function resetDb(cb) {
   if (!db) return cb();
@@ -36,9 +22,11 @@ function resetDb(cb) {
 
 describe('Storage', function() {
   before(function(done) {
-    openDb(function() {
+    mongodb.MongoClient.connect(config.mongoDb.uri, function(err, db1) {
+      if (err) throw err;
+      db = db1;
       storage = new Storage({
-        db: db
+        db: db1
       });
       done();
     });
@@ -54,6 +42,8 @@ describe('Storage', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        coin: 'btc',
+        network: 'livenet',
       });
       should.exist(wallet);
       storage.storeWallet(wallet, function(err) {
@@ -85,9 +75,12 @@ describe('Storage', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        coin: 'btc',
+        network: 'livenet',
       });
       _.each(_.range(3), function(i) {
         var copayer = Model.Copayer.create({
+          coin: 'btc',
           name: 'copayer ' + i,
           xPubKey: 'xPubKey ' + i,
           requestPubKey: 'requestPubKey ' + i,
@@ -127,9 +120,12 @@ describe('Storage', function() {
         name: 'my wallet',
         m: 2,
         n: 3,
+        coin: 'btc',
+        network: 'livenet',
       });
       _.each(_.range(3), function(i) {
         var copayer = Model.Copayer.create({
+          coin: 'btc',
           name: 'copayer ' + i,
           xPubKey: 'xPubKey ' + i,
           requestPubKey: 'requestPubKey ' + i,
@@ -144,6 +140,8 @@ describe('Storage', function() {
         proposals = _.map(_.range(4), function(i) {
           var tx = Model.TxProposal.create({
             walletId: '123',
+            coin: 'btc',
+            network: 'livenet',
             outputs: [{
               toAddress: '18PzpUFkFZE8zKWUPvfykkTxmB9oMR8qP7',
               amount: i + 100,
@@ -211,7 +209,7 @@ describe('Storage', function() {
             should.not.exist(err);
             should.exist(txs);
             txs.length.should.equal(3);
-            _.any(txs, {
+            _.some(txs, {
               id: proposals[0].id
             }).should.be.false;
             done();
