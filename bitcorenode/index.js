@@ -7,8 +7,6 @@ var https = require('https');
 var http = require('http');
 var async = require('async');
 var path = require('path');
-var bitcore = require('particl-bitcore-lib');
-var Networks = bitcore.Networks;
 var Locker = require('locker-server');
 var BlockchainMonitor = require('../lib/blockchainmonitor');
 var EmailService = require('../lib/emailservice');
@@ -76,31 +74,7 @@ Service.prototype._readHttpsOptions = function() {
  * @returns {Object}
  */
 Service.prototype._getConfiguration = function() {
-  var self = this;
-
-  var providerOptions = {
-    provider: 'insight',
-    url: (self.node.https ? 'https://' : 'http://') + 'localhost:' + self.node.port,
-    apiPrefix: '/insight-api'
-  };
-
-  // A bitcore-node is either livenet or testnet, so we'll pass
-  // the configuration options to communicate via the local running
-  // instance of the insight-api service.
-  if (self.node.network === Networks.livenet) {
-    baseConfig.blockchainExplorerOpts = {
-      livenet: providerOptions
-    };
-  } else if (self.node.network === Networks.testnet) {
-    baseConfig.blockchainExplorerOpts = {
-      testnet: providerOptions
-    };
-  } else {
-    throw new Error('Unknown network');
-  }
-
   return baseConfig;
-
 };
 
 /**
