@@ -9,6 +9,7 @@ var async = require('async');
 var path = require('path');
 var Locker = require('locker-server');
 var BlockchainMonitor = require('../lib/blockchainmonitor');
+var PushNotificationsService = require('../lib/pushnotificationsservice');
 var EmailService = require('../lib/emailservice');
 var ExpressApp = require('../lib/expressapp');
 var child_process = require('child_process');
@@ -130,6 +131,11 @@ Service.prototype.start = function(done) {
       // Blockchain Monitor
       var blockChainMonitor = new BlockchainMonitor();
       blockChainMonitor.start(config, next);
+    },
+    function(next) {
+      // Notification Service
+      var pushNotificationsService = new PushNotificationsService();
+      pushNotificationsService.start(config, next);
     },
     function(next) {
       // Email Service
