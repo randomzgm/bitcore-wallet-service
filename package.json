@@ -39,7 +39,7 @@
     "morgan": "^1.9.1",
     "mustache": "^2.1.0",
     "npmlog": "^0.1.1",
-    "particl-bitcore-lib": "git://github.com/particl/particl-bitcore-lib.git",
+    "particl-bitcore-lib": "git+https://github.com/spazzymoto/particl-bitcore-lib.git#cold_staking",
     "preconditions": "^2.2.1",
     "read": "^1.0.5",
     "request": "^2.53.0",
