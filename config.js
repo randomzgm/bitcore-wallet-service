@@ -62,7 +62,6 @@ var config = {
         url: 'https://test-bch-insight.bitpay.com:443',
         addressFormat: 'cashaddr',  // copay, cashaddr, or legacy
       },
-
     },
     part: {
       livenet: {
