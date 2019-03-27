@@ -42,7 +42,7 @@ var Service = function(options) {
 
 util.inherits(Service, EventEmitter);
 
-Service.dependencies = ['insight-api'];
+Service.dependencies = ['particl-insight-api'];
 
 /**
  * This method will read `key` and `cert` files from disk based on `httpsOptions` and
