@@ -39,40 +39,40 @@ var config = {
   },
   blockchainExplorerOpts: {
     btc: {
-      livenet: {
-        provider: 'insight',
-        url: 'https://insight.bitpay.com:443',
-      },
-      testnet: {
-        provider: 'insight',
-        url: 'https://test-insight.bitpay.com:443',
+      // livenet: {
+      //   provider: 'insight',
+      //   url: 'https://insight.bitpay.com:443',
+      // },
+      // testnet: {
+      //   provider: 'insight',
+      //   url: 'https://test-insight.bitpay.com:443',
         // Multiple servers (in priority order)
         // url: ['http://a.b.c', 'https://test-insight.bitpay.com:443'],
-      },
+      // },
     },
     bch: {
-      livenet: {
-        provider: 'insight',
+      // livenet: {
+      //   provider: 'insight',
         //url: 'https://cashexplorer.bitcoin.com',
-        url: 'https://bch-insight.bitpay.com:443',
-        addressFormat: 'cashaddr',  // copay, cashaddr, or legacy
-      },
-      testnet: {
-        provider: 'insight',
-        url: 'https://test-bch-insight.bitpay.com:443',
-        addressFormat: 'cashaddr',  // copay, cashaddr, or legacy
-      },
+      //   url: 'https://bch-insight.bitpay.com:443',
+      //   addressFormat: 'cashaddr',  // copay, cashaddr, or legacy
+      // },
+      // testnet: {
+      //   provider: 'insight',
+      //   url: 'https://test-bch-insight.bitpay.com:443',
+      //   addressFormat: 'cashaddr',  // copay, cashaddr, or legacy
+      // },
     },
     part: {
       livenet: {
         provider: 'insight',
-        url: 'https://explorer.particl.io:443',
-        apiPrefix: '/particl-insight-api'
+        url: 'https://insight.vpubchain.info',
+        apiPrefix: '/vircle-insight-api'
       },
       testnet: {
         provider: 'insight',
-        url: 'https://explorer-testnet.particl.io:443',
-        apiPrefix: '/particl-insight-api'
+        apiPrefix: '/vircle-insight-api',
+        url: 'http://52.82.123.93:3001'
       },
     },
   },
